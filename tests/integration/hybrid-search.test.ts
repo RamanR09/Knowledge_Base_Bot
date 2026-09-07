@@ -215,7 +215,7 @@ describe("hybridSearch (real CTE SQL against pgvector)", () => {
 
   it("surfaces a keyword-only match through the tsv leg", async (ctx) => {
     if (!retrieve) return ctx.skip(SKIP_MESSAGE);
-    const query = "kubernetes autoscaling";
+    const query = "kubernetes autoscale nodes";
     // Query vector points at no seeded chunk → the vector arm gives no chunk
     // an advantage; only the full-text leg can single one out.
     h.queryVectors.set(query, h.basisVector(900));
@@ -229,7 +229,7 @@ describe("hybridSearch (real CTE SQL against pgvector)", () => {
 
   it("fuses both arms with RRF: a dual-arm hit outranks single-arm hits", async (ctx) => {
     if (!retrieve) return ctx.skip(SKIP_MESSAGE);
-    const query = "kubernetes autoscaling";
+    const query = "kubernetes autoscale nodes";
     h.queryVectors.set(query, h.basisVector(chunkAutoscale.hot));
 
     const results = await retrieve.hybridSearch(query);
@@ -262,7 +262,7 @@ describe("retrieveForQuestion (multi-sub-query merge)", () => {
   it("dedupes overlapping pools, keeps the best score per chunk, and caps the pool", async (ctx) => {
     if (!retrieve) return ctx.skip(SKIP_MESSAGE);
     const q1 = "unrelated telemetry snapshot";
-    const q2 = "kubernetes autoscaling";
+    const q2 = "kubernetes autoscale nodes";
     h.queryVectors.set(q1, h.basisVector(chunkRollback.hot));
     h.queryVectors.set(q2, h.basisVector(chunkAutoscale.hot));
 
