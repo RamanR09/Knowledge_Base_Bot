@@ -1,0 +1,68 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    # Weekly RAG eval run (Mondays 06:00 UTC) — see the `eval` job.
+    - cron: "0 6 * * 1"
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run test
+
+  integration:
+    # Integration tests use testcontainers, which drives the Docker daemon
+    # already present on GitHub-hosted runners and pulls pgvector/pgvector:pg17
+    # itself — so no `services:` postgres block is needed (running both would
+    # just duplicate the database).
+    needs: checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run test:integration
+
+  eval:
+    # RAG quality harness (recall/faithfulness thresholds). Runs only on
+    # manual dispatch or the weekly cron, and only when the provider secrets
+    # are configured. NOTE: DATABASE_URL must point at an environment whose
+    # corpus was seeded from evals/fixtures/ (see evals/README.md) — the
+    # harness measures retrieval against those ingested documents.
+    if: github.event_name == 'workflow_dispatch' || github.event_name == 'schedule'
+    needs: checks
+    runs-on: ubuntu-latest
+    continue-on-error: false
+    env:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      VOYAGE_API_KEY: ${{ secrets.VOYAGE_API_KEY }}
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET || 'ci-eval-placeholder-secret' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Run RAG eval harness
+        # Secrets are not directly readable in job-level `if`, so gate the
+        # step on the env vars derived from them.
+        if: env.ANTHROPIC_API_KEY != '' && env.VOYAGE_API_KEY != '' && env.DATABASE_URL != ''
+        run: npm run eval
