@@ -166,8 +166,7 @@ Four layers, wired into CI (`.github/workflows/ci.yml`):
 │   └── workers/        # pg-boss job handlers
 ├── evals/              # golden.yaml · judges · fixture corpus · runner
 ├── tests/              # unit / integration / e2e
-├── docs/               # PRD · ARCHITECTURE · USER_FLOWS · DESIGN_SYSTEM · TEST_PLAN
-└── .claude/agents/     # the AI agent workforce used to build & maintain this repo
+└── docs/               # PRD · ARCHITECTURE · USER_FLOWS · DESIGN_SYSTEM · TEST_PLAN
 ```
 
 Deep dives: [PRD](docs/PRD.md) · [Architecture](docs/ARCHITECTURE.md) (with decision log) · [User flows](docs/USER_FLOWS.md) · [Design system](docs/DESIGN_SYSTEM.md) · [Test plan](docs/TEST_PLAN.md)
@@ -195,6 +194,6 @@ docker compose --profile production up    # app + worker + db
 
 ---
 
-Built end-to-end with [Claude Code](https://claude.com/claude-code) and a five-agent AI workforce (see `.claude/agents/`).
+Built end-to-end with [Claude Code](https://claude.com/claude-code).
 
 *No open-source license is currently granted — all rights reserved. Open an issue if you'd like to use this beyond reading the code.*

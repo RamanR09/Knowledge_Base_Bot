@@ -37,6 +37,11 @@ yarn-error.log*
 # uploaded documents & local data
 /data/
 
+# AI assistant tooling (local only)
+.claude/
+CLAUDE.md
+AGENTS.md
+
 # eval reports & test artifacts
 /evals/reports/
 /test-results/
