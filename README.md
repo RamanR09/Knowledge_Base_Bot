@@ -194,6 +194,4 @@ docker compose --profile production up    # app + worker + db
 
 ---
 
-Built end-to-end with [Claude Code](https://claude.com/claude-code).
-
 *No open-source license is currently granted — all rights reserved. Open an issue if you'd like to use this beyond reading the code.*
